@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeetasi - Advanced API Infrastructure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0A0A0A;
+            --surface-1: #1A1A1A;
+            --surface-2: rgba(26, 26, 26, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-primary: #EDEDED;
+            --text-secondary: #A3A3A3;
+            --accent: #38BDF8;
+            --accent-glow: rgba(56, 189, 248, 0.3);
+            --success: #4ADE80;
+            --error: #F87171;
+            --font-family: 'Inter', sans-serif;
+        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        section { padding: 100px 0; position: relative; }
+        h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; color: var(--text-primary); letter-spacing: -0.02em; }
+        h2 { font-size: clamp(2rem, 5vw, 2.8rem); text-align: center; margin-bottom: 16px; }
+        .section-subtitle { text-align: center; color: var(--text-secondary); max-width: 700px; margin: 0 auto 64px auto; font-size: 1.1rem; line-height: 1.7; }
+        .btn { display: inline-block; padding: 12px 28px; background: var(--accent); color: #0A0A0A; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; border: none; cursor: pointer; }
+        .btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 30px var(--accent-glow); }
+        .header { position: fixed; top: 0; left: 0; width: 100%; padding: 20px 0; z-index: 1000; transition: all 0.3s ease; background-color: rgba(10, 10, 10, 0.6); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+        .navbar { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); text-decoration: none; letter-spacing: -1.5px; }
+        .logo span { color: var(--accent); }
+        #home { min-height: 90vh; display: flex; align-items: center; text-align: center; }
+        .hero-content h1 { font-size: clamp(2.8rem, 7vw, 4.5rem); margin-bottom: 24px; background: linear-gradient(90deg, #ffffff, #dcdcdc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-content p { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 40px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .api-list { display: flex; flex-direction: column; gap: 24px; }
+        .api-item { background: var(--surface-1); padding: 32px; border-radius: 16px; border: 1px solid var(--border); transition: all 0.3s ease; display: flex; flex-wrap: wrap; align-items: center; gap: 24px; }
+        .api-item:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 0 40px var(--accent-glow); }
+        .api-item-icon { font-size: 2.5rem; color: var(--accent); flex-shrink: 0; }
+        .api-item-info { flex-grow: 1; }
+        .api-item-info h3 { font-size: 1.5rem; margin-bottom: 8px; }
+        .api-item-info p { color: var(--text-secondary); font-size: 1rem; }
+        .api-item-endpoint { background-color: var(--bg); padding: 8px 16px; border-radius: 8px; font-family: 'SF Mono', 'Courier New', monospace; font-size: 0.9rem; color: var(--text-secondary); user-select: all; }
+        .api-item-endpoint .method { color: var(--accent); font-weight: 700; margin-right: 12px; }
+        .api-item-action .btn { padding: 10px 24px; font-size: 0.9rem; }
+        .image-uploader-card { background: var(--surface-1); padding: 40px; border-radius: 16px; border: 1px solid var(--border); margin-top: 48px; }
+        #drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        #drop-zone.dragover { border-color: var(--accent); background-color: rgba(56, 189, 248, 0.1); }
+        #drop-zone i { font-size: 3rem; color: var(--text-secondary); margin-bottom: 16px; }
+        #image-upload-result { margin-top: 24px; padding: 16px; background: var(--bg); border-radius: 8px; font-family: 'SF Mono', 'Courier New', monospace; font-size: 0.9rem; color: var(--text-secondary); min-height: 50px; border: 1px solid var(--border); word-break: break-all; }
+        .footer { background-color: var(--bg); padding: 40px 0; text-align: center; border-top: 1px solid var(--border); font-size: 0.9rem; color: var(--text-secondary); }
+        .footer a { color: var(--accent); text-decoration: none; transition: color 0.3s; }
+        .footer a:hover { color: #fff; }
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease-out, transform 0.7s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container navbar">
+            <a href="#" class="logo">Zee<span>tasi</span></a>
+            <nav>
+                <a href="#apis" class="btn">API Endpoints</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home">
+            <div class="container hero-content">
+                <h1 class="fade-in">The Developer's Edge.</h1>
+                <p class="fade-in" style="transition-delay: 0.1s;">Harness powerful, real-time data with an API infrastructure built for speed, stability, and elegance.</p>
+                <a href="#apis" class="btn fade-in" style="transition-delay: 0.2s;">Get Started for Free</a>
+            </div>
+        </section>
+
+        <section id="apis">
+            <div class="container">
+                <h2 class="fade-in">API Endpoint Catalog</h2>
+                <p class="section-subtitle fade-in">Explore our suite of public APIs. All endpoints require a valid API key sent in the `x-api-key` header. Use `zeetasi-free-key` to start testing.</p>
+                <div class="api-list">
+                    <div class="api-item fade-in">
+                        <i class="fab fa-tiktok api-item-icon"></i>
+                        <div class="api-item-info">
+                            <h3>TikTok Video Scraper</h3>
+                            <p>Retrieve full metadata and download links (with & without watermark) from a TikTok video URL.</p>
+                        </div>
+                        <div class="api-item-endpoint"><span class="method">GET</span>/api/tiktok</div>
+                    </div>
+                    <div class="api-item fade-in">
+                        <i class="fab fa-instagram api-item-icon"></i>
+                        <div class="api-item-info">
+                            <h3>Instagram Post Scraper</h3>
+                            <p>Fetch details for an Instagram Post, Reel, or Story, including media URLs.</p>
+                        </div>
+                        <div class="api-item-endpoint"><span class="method">GET</span>/api/instagram</div>
+                    </div>
+                    <div class="api-item fade-in">
+                        <i class="fa-solid fa-image api-item-icon"></i>
+                        <div class="api-item-info">
+                            <h3>Image Uploader (toURL)</h3>
+                            <p>Upload an image file and receive a permanent direct URL. Max file size: 10MB.</p>
+                        </div>
+                        <div class="api-item-endpoint"><span class="method">POST</span>/api/upload-image</div>
+                    </div>
+                </div>
+                
+                <div class="image-uploader-card fade-in">
+                    <h3>Try the Image Uploader</h3>
+                    <p style="color:var(--text-secondary); margin-top: -10px; margin-bottom: 24px;">Drag & drop an image or click to select.</p>
+                    <div id="drop-zone">
+                        <input type="file" id="image-upload-input" accept="image/*" hidden>
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Drop image here or click to browse</p>
+                    </div>
+                    <div id="image-upload-result">Awaiting upload...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2024 Zeetasi. All Rights Reserved. | <a href="/owner.html" target="_blank">Owner Access</a></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('image-upload-input');
+            const resultDiv = document.getElementById('image-upload-result');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'));
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'));
+            });
+
+            dropZone.addEventListener('drop', (e) => handleFiles(e.dataTransfer.files));
+
+            const handleFiles = async (files) => {
+                if (files.length === 0) return;
+                const file = files[0];
+                if (!file.type.startsWith('image/')) {
+                    resultDiv.style.color = 'var(--error)';
+                    resultDiv.textContent = 'Error: Only image files are allowed.';
+                    return;
+                }
+
+                resultDiv.style.color = 'var(--text-secondary)';
+                resultDiv.textContent = 'Uploading...';
+
+                const formData = new FormData();
+                formData.append('image', file);
+
+                try {
+                    const response = await fetch('/api/upload-image', {
+                        method: 'POST',
+                        headers: { 'x-api-key': 'zeetasi-free-key' },
+                        body: formData
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.message);
+
+                    resultDiv.style.color = 'var(--success)';
+                    resultDiv.textContent = `Success! URL: ${data.url}`;
+                } catch (error) {
+                    resultDiv.style.color = 'var(--error)';
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
+            };
+            
+            const faders = document.querySelectorAll('.fade-in');
+            const appearOptions = { threshold: 0.2 };
+            const appearOnScroll = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                });
+            }, appearOptions);
+            faders.forEach(fader => appearOnScroll.observe(fader));
+        });
+    </script>
+</body>
+</html>
